@@ -41,7 +41,7 @@ for files in groupsOfFiles:
         result = [[], [], []]       # sh, сумма квадратов отклонений, отклонение по вертикали
 
         for sh in range(tsh - err, tsh + err):       # sh - сдвиг начала near относительно саамй левой позиции
-            # выясняем ращницу по вертикали
+            # выясняем разницу по вертикали
             diff = (corepref[len(core)] - corepref[sh] - nearpref[len(core) - sh])/(len(core) - sh)
             # разница между средним на промежутке для core и near (сдвиг по вертикали)
             distSq = 0  # переменная с суммой квадратов
@@ -98,5 +98,4 @@ for files in groupsOfFiles:
         plt.show()
 
     np.savetxt(f'connected{files[0][:-4]}.txt', res)
-
 
