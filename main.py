@@ -98,4 +98,3 @@ for files in groupsOfFiles:
         plt.show()
 
     np.savetxt(f'connected{files[0][:-4]}.txt', res)
-
