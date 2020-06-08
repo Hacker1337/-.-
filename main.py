@@ -1,8 +1,11 @@
 import numpy as np
 from matplotlib import pyplot as plt
+import os
 
-
-source = "Data/"
+source = "Data/"            # папка с исходными файлами
+outputPlace = "output/"     # папка для склеенных массивов
+if not os.path.exists(outputPlace):
+    os.makedirs(outputPlace)
 groupsOfFiles = [["320.txt", "325.txt", "330.txt", "335.txt", "340.txt", "345.txt", "350.txt", "355.txt"]]
 # массив с массивами файлов, которые нужно объединить в один график
 
@@ -97,4 +100,4 @@ for files in groupsOfFiles:
         plt.plot(res)
         plt.show()
 
-    np.savetxt(f'connected{files[0][:-4]}.txt', res)
+    np.savetxt(outputPlace+f'connected{files[0][:-4]}.txt', res)
