@@ -6,7 +6,7 @@ source = "Data/"            # папка с исходными файлами
 outputPlace = "output/"     # папка для склеенных массивов
 if not os.path.exists(outputPlace):
     os.makedirs(outputPlace)
-groupsOfFiles = [["320.txt", "325.txt", "330.txt", "335.txt", "340.txt", "345.txt", "350.txt", "355.txt"]]
+dirs = ["Data"]
 # массив с массивами файлов, которые нужно объединить в один график
 
 # files = ["320.txt", "325.txt", "330.txt", "335.txt", "340.txt", "345.txt", "350.txt", "355.txt"]
@@ -20,11 +20,13 @@ tsh = int(soundV*deltaT/X)       # теоретический сдвиг меж�
 err = int(tsh*0.3)        # максимальное допустимое отклонение от теоретического сдвига
 
 
-for files in groupsOfFiles:
-
+# for files in groupsOfFiles:
+for dir in dirs:
     data = []       # исходные массивы
+    files = os.listdir(dir)
     for f in files:
-        data.append(np.loadtxt(source+f))
+        if f[-3:] == 'txt':
+            data.append(np.loadtxt(source+f))
     prefs = []
     for m in data:
         sum = 0
@@ -100,4 +102,4 @@ for files in groupsOfFiles:
         plt.plot(res)
         plt.show()
 
-    np.savetxt(outputPlace+f'connected{files[0][:-4]}.txt', res)
+    np.savetxt(outputPlace+f'connected{dir}.txt', res)
