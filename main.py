@@ -1,9 +1,10 @@
+import os
 import numpy as np
 from matplotlib import pyplot as plt
 source = "Data/"
 files = ["320.txt", "325.txt", "330.txt", "335.txt", "340.txt", "345.txt", "350.txt", "355.txt"]
 # files = [ str(i) + ".txt" for i in range(320, 360, 5)]    # или для краткости так
-
+dir = "Data"
 display = True      # выводить  ли графики
 
 '''
@@ -19,6 +20,7 @@ err = 60        # максимальное допустимое отклонен
 
 
 data = []       # исходные массивы
+files = os.listdir(dir)
 for f in files:
     data.append(np.loadtxt(source+f))
 prefs = []
@@ -47,7 +49,7 @@ for a in range(len(data)-1):
         for i in range(len(core) - sh):
             distSq += (near[i] - diff - core[i + sh]) ** 2
         result[0].append(sh)
-        result[1].append(distSq)
+        result[1].append(distSq/(len(core) - sh))
         result[2].append(diff)
     # if a == 4:
     #     plt.plot(result[0], result[1])
