@@ -14,19 +14,22 @@ dirs = ["Data"]
 display = True      # выводить  ли графики
 
 soundV = 1800   # скорость звука в материале
-deltaT = 5e-6   # промежутки времени между сигналами в секундах
 X = 0.000083    # размер пикселя в метрах
-tsh = int(soundV*deltaT/X)       # теоретический сдвиг между сигналами
-err = int(tsh*0.3)        # максимальное допустимое отклонение от теоретического сдвига
+tsh = []        # int(soundV*deltaT/X)       # теоретический сдвиг между сигналами
+relErr = 0.1        # максимальное допустимое отклонение от теоретического сдвига
 
 
 # for files in groupsOfFiles:
 for dir in dirs:
     data = []       # исходные массивы
     files = os.listdir(dir)
+    detectionTimes = []
     for f in files:
         if f[-3:] == 'txt':
             data.append(np.loadtxt(source+f))
+            detectionTimes.append(int(f[:f.find('.')]))
+    for i in range(len(detectionTimes)-1):
+        tsh.append(int(soundV*(detectionTimes[i+1]-detectionTimes[i])*1e-6/X))
     prefs = []
     for m in data:
         sum = 0
@@ -44,8 +47,7 @@ for dir in dirs:
         near = data[a+1]
         nearpref = prefs[a+1]
         result = [[], [], []]       # sh, сумма квадратов отклонений, отклонение по вертикали
-
-        for sh in range(tsh - err, tsh + err):       # sh - сдвиг начала near относительно саамй левой позиции
+        for sh in range(int(tsh[a]*(1-relErr)), int(tsh[a]*(1+relErr))):       # sh - сдвиг начала near относительно саамй левой позиции
             # выясняем разницу по вертикали
             diff = (corepref[len(core)] - corepref[sh] - nearpref[len(core) - sh])/(len(core) - sh)
             # разница между средним на промежутке для core и near (сдвиг по вертикали)
@@ -53,7 +55,7 @@ for dir in dirs:
             for i in range(len(core) - sh):
                 distSq += (near[i] - diff - core[i + sh]) ** 2
             result[0].append(sh)
-            result[1].append(distSq)
+            result[1].append(distSq/(len(core) - sh))
             result[2].append(diff)
 
 
