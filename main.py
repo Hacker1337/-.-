@@ -6,7 +6,7 @@ import os
 outputPlace = "output/"     # папка для склеенных массивов
 if not os.path.exists(outputPlace):
     os.makedirs(outputPlace)
-dirs = ["Data2"]
+dirs = ["Data3"]
 # массив с массивами файлов, которые нужно объединить в один график
 
 # files = ["320.txt", "325.txt", "330.txt", "335.txt", "340.txt", "345.txt", "350.txt", "355.txt"]
@@ -16,7 +16,7 @@ display = True      # выводить  ли графики
 soundV = 1800   # скорость звука в материале
 X = 0.000083    # размер пикселя в метрах
 tsh = []        # int(soundV*deltaT/X)       # теоретический сдвиг между сигналами
-relErr = 0.1        # максимальное допустимое отклонение от теоретического сдвига
+relErr = 0.4        # максимальное допустимое отклонение от теоретического сдвига
 
 
 # for files in groupsOfFiles:
@@ -53,7 +53,7 @@ for dir in dirs:
             # разница между средним на промежутке для core и near (сдвиг по вертикали)
             distSq = 0  # переменная с суммой квадратов
             for i in range(len(core) - sh):
-                distSq += (near[i] - diff - core[i + sh]) ** 2
+                distSq += (near[i] + diff - core[i + sh]) ** 2
             result[0].append(sh)
             result[1].append(distSq/(len(core) - sh))
             result[2].append(diff)
@@ -73,16 +73,14 @@ for dir in dirs:
     for i in range(len(relShift[0])):
         absShift[0].append(absShift[0][-1] + relShift[0][i])
         absShift[1].append(absShift[1][-1] + relShift[1][i])
+    np.savetxt("relShift.txt", relShift)
+    np.savetxt("absShift.txt", absShift)
 
     if display:     # графики в нахлест
         for i in range(len(absShift[0])):
             plt.plot(np.arange(absShift[0][i], len(data[i]) + absShift[0][i]), data[i] + absShift[1][i])
 
         plt.show()
-
-
-
-
 
     res = [0]*(int(absShift[0][-1]) + len(data[-1]))
     count = [0]*(int(absShift[0][-1]) + len(data[-1]) + 1)  # считаем, сколько кусочков перекрываются в этой точке
