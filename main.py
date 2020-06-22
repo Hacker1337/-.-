@@ -2,11 +2,11 @@ import numpy as np
 from matplotlib import pyplot as plt
 import os
 
-source = "Data/"            # папка с исходными файлами
+
 outputPlace = "output/"     # папка для склеенных массивов
 if not os.path.exists(outputPlace):
     os.makedirs(outputPlace)
-dirs = ["Data"]
+dirs = ["Data2"]
 # массив с массивами файлов, которые нужно объединить в один график
 
 # files = ["320.txt", "325.txt", "330.txt", "335.txt", "340.txt", "345.txt", "350.txt", "355.txt"]
@@ -26,7 +26,7 @@ for dir in dirs:
     detectionTimes = []
     for f in files:
         if f[-3:] == 'txt':
-            data.append(np.loadtxt(source+f))
+            data.append(np.loadtxt(os.path.join(dir, f)))
             detectionTimes.append(int(f[:f.find('.')]))
     for i in range(len(detectionTimes)-1):
         tsh.append(int(soundV*(detectionTimes[i+1]-detectionTimes[i])*1e-6/X))
