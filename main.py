@@ -6,17 +6,17 @@ import os
 outputPlace = "output/"     # папка для склеенных массивов
 if not os.path.exists(outputPlace):
     os.makedirs(outputPlace)
-dirs = ["Data3"]
+dirs = ["Data", "Data2", "Data3"]
 # массив с массивами файлов, которые нужно объединить в один график
 
 # files = ["320.txt", "325.txt", "330.txt", "335.txt", "340.txt", "345.txt", "350.txt", "355.txt"]
 # # files = [ str(i) + ".txt" for i in range(320, 360, 5)]    # или для краткости так
 display = True      # выводить  ли графики
 
-soundV = 1800   # скорость звука в материале
+soundV = 3000   # скорость звука в материале
 X = 0.000083    # размер пикселя в метрах
 tsh = []        # int(soundV*deltaT/X)       # теоретический сдвиг между сигналами
-relErr = 0.4        # максимальное допустимое отклонение от теоретического сдвига
+relErr = 0.8        # максимальное допустимое отклонение от теоретического сдвига
 
 
 # for files in groupsOfFiles:
@@ -58,8 +58,6 @@ for dir in dirs:
             result[1].append(distSq/(len(core) - sh))
             result[2].append(diff)
 
-
-
         minV = result[1][0]
         minI = 0
         for i in range(1, len(result[0])):
@@ -73,8 +71,8 @@ for dir in dirs:
     for i in range(len(relShift[0])):
         absShift[0].append(absShift[0][-1] + relShift[0][i])
         absShift[1].append(absShift[1][-1] + relShift[1][i])
-    np.savetxt("relShift.txt", relShift)
-    np.savetxt("absShift.txt", absShift)
+    np.savetxt(os.path.join(outputPlace, f"relShift{dir}.txt"), relShift)
+    np.savetxt(os.path.join(outputPlace, f"absShift{dir}.txt"), absShift)
 
     if display:     # графики в нахлест
         for i in range(len(absShift[0])):
