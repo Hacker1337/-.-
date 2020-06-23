@@ -1,22 +1,32 @@
 import numpy as np
 from matplotlib import pyplot as plt
 import os
+import math
 
+
+def weight(x):          # функция распределения веса на краях; принимает значаения от -1 до 1; в нуле = 1; с краев = 0;
+
+    # return 1 - abs(x)*0.99
+    return 1 - 0.99*x**2
+    # return math.e**(-4*x**2)
+
+
+border = 0.1   # доля, которая будет считаться крайней
 
 outputPlace = "output/"     # папка для склеенных массивов
 if not os.path.exists(outputPlace):
     os.makedirs(outputPlace)
-dirs = ["Data3"]
+dirs = ["Data", "Data2", "Data3"]
 # массив с массивами файлов, которые нужно объединить в один график
 
 # files = ["320.txt", "325.txt", "330.txt", "335.txt", "340.txt", "345.txt", "350.txt", "355.txt"]
 # # files = [ str(i) + ".txt" for i in range(320, 360, 5)]    # или для краткости так
 display = True      # выводить  ли графики
 
-soundV = 1800   # скорость звука в материале
+soundV = 3000   # скорость звука в материале
 X = 0.000083    # размер пикселя в метрах
 tsh = []        # int(soundV*deltaT/X)       # теоретический сдвиг между сигналами
-relErr = 0.4        # максимальное допустимое отклонение от теоретического сдвига
+relErr = 0.8        # максимальное допустимое отклонение от теоретического сдвига
 
 
 # for files in groupsOfFiles:
@@ -58,8 +68,6 @@ for dir in dirs:
             result[1].append(distSq/(len(core) - sh))
             result[2].append(diff)
 
-
-
         minV = result[1][0]
         minI = 0
         for i in range(1, len(result[0])):
@@ -73,8 +81,8 @@ for dir in dirs:
     for i in range(len(relShift[0])):
         absShift[0].append(absShift[0][-1] + relShift[0][i])
         absShift[1].append(absShift[1][-1] + relShift[1][i])
-    np.savetxt("relShift.txt", relShift)
-    np.savetxt("absShift.txt", absShift)
+    np.savetxt(os.path.join(outputPlace, f"relShift{dir}.txt"), relShift)
+    np.savetxt(os.path.join(outputPlace, f"absShift{dir}.txt"), absShift)
 
     if display:     # графики в нахлест
         for i in range(len(absShift[0])):
@@ -85,14 +93,20 @@ for dir in dirs:
     res = [0]*(int(absShift[0][-1]) + len(data[-1]))
     count = [0]*(int(absShift[0][-1]) + len(data[-1]) + 1)  # считаем, сколько кусочков перекрываются в этой точке
     for i in range(len(data)):
-        for j in range(len(data[i])):
+        for j in range(int(len(data[i])*border), len(data[i])-int(len(data[i])*border)):   # полное прибавление
             res[j+int(absShift[0][i])] += data[i][j]+absShift[1][i]
-        count[int(absShift[0][i])] += 1
-        count[int(absShift[0][i])+len(data[i])] -= 1
-    c = 0
-    for i in range(len(count)):
-        c += count[i]
-        count[i] = c
+            count[j+int(absShift[0][i])] += 1
+        for j in range(int(len(data[i])*border)):                               # частичное прибавление лево
+            res[j+int(absShift[0][i])] += \
+                (data[i][j]+absShift[1][i])*weight((j - int(len(data[i])*border))/int(len(data[i])*border))
+            count[j + int(absShift[0][i])] += \
+                1*weight((j - int(len(data[i])*border))/int(len(data[i])*border))
+        for j in range(len(data[i])-int(len(data[i])*border), len(data[i])):    # частичное прибавление право
+            res[j+int(absShift[0][i])] += \
+                (data[i][j]+absShift[1][i])*weight((j-len(data[i])+int(len(data[i])*border))/int(len(data[i])*border))
+            count[j + int(absShift[0][i])] += \
+                1*weight((j-len(data[i])+int(len(data[i])*border))/int(len(data[i])*border))
+
     for i in range(len(res)):
         res[i] /= count[i]
 
